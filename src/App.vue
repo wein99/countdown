@@ -33,7 +33,7 @@ const closeModal = () => {
 
 // GitHub 配置
 const GITHUB_CONFIG = {
-  token: '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',
+  token: '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',
   owner: 'wein99',
   repo: 'countdown',
   issueNumber: 1
