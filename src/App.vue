@@ -16,21 +16,6 @@ const timerInterval = ref(null)
 const pulsePosition = ref(0)
 const pulseAnimation = ref(null)
 
-// 弹窗控制
-const showModal = ref(false)
-const birthdayInput = ref('')
-
-// 一键解冻
-const openModal = () => {
-  showModal.value = true
-  birthdayInput.value = ''
-}
-
-const closeModal = () => {
-  showModal.value = false
-  birthdayInput.value = ''
-}
-
 // GitHub 配置
 const GITHUB_CONFIG = {
   token: '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',
@@ -146,7 +131,7 @@ const currentImage = computed(() => {
 // 底部文字
 const bottomText = computed(() => {
   if (progressPercent.value >= 100) return '谢谢小如，永远爱你＼(＠＾０＾＠)/♪'
-  return '度秒如年，跪求解冻 (╥﹏╥)'
+  return '度秒如年，跪求原谅 (╥﹏╥)'
 })
 
 // 剩余时间
@@ -353,29 +338,6 @@ onUnmounted(() => {
       <img :src="currentImage" alt="image" class="bottom-image" />
     </div>
     <div class="bottom-text">{{ bottomText }}</div>
-    
-    <!-- 一键解冻按钮 -->
-    <button class="unfreeze-btn" @click="openModal">一键解冻</button>
-    
-    <!-- 弹窗 -->
-    <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
-      <div class="modal-content">
-        <div class="modal-title">请输入您的生日❤️</div>
-        <div class="modal-hint">输入格式参考：1 月 1 日输入 0101</div>
-        <input 
-          v-model="birthdayInput" 
-          type="text" 
-          class="modal-input" 
-          placeholder="请输入 4 位数字"
-          maxlength="4"
-          @keyup.enter="handleUnfreeze"
-        />
-        <div class="modal-actions">
-          <button class="modal-cancel" @click="closeModal">取消</button>
-          <button class="modal-confirm" @click="handleUnfreeze">同意解冻</button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -691,131 +653,6 @@ onUnmounted(() => {
   letter-spacing: 1px;
 }
 
-.unfreeze-btn {
-  margin-top: 20px;
-  padding: 12px 40px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #ffffff;
-  background: linear-gradient(135deg, #ff0040 0%, #ff4466 100%);
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(255, 0, 64, 0.4);
-  transition: all 0.3s ease;
-  letter-spacing: 2px;
-}
-
-.unfreeze-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 30px rgba(255, 0, 64, 0.6);
-}
-
-.unfreeze-btn:active {
-  transform: translateY(0);
-}
-
-/* 弹窗样式 */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  backdrop-filter: blur(5px);
-}
-
-.modal-content {
-  background: linear-gradient(135deg, #1e0a3c 0%, #2d1b4e 100%);
-  border-radius: 20px;
-  padding: 30px 40px;
-  max-width: 400px;
-  width: 90%;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-}
-
-.modal-title {
-  font-size: 20px;
-  color: #ffffff;
-  text-align: center;
-  margin-bottom: 10px;
-  font-weight: 600;
-}
-
-.modal-hint {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.modal-input {
-  width: 100%;
-  padding: 15px 20px;
-  font-size: 18px;
-  text-align: center;
-  letter-spacing: 5px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.05);
-  color: #ffffff;
-  margin-bottom: 20px;
-  outline: none;
-  transition: border-color 0.3s ease;
-}
-
-.modal-input:focus {
-  border-color: #ff0040;
-}
-
-.modal-input::placeholder {
-  color: rgba(255, 255, 255, 0.3);
-  letter-spacing: 1px;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-}
-
-.modal-cancel,
-.modal-confirm {
-  padding: 12px 30px;
-  font-size: 15px;
-  font-weight: 600;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
-}
-
-.modal-cancel {
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.modal-cancel:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.modal-confirm {
-  background: linear-gradient(135deg, #ff0040 0%, #ff4466 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 15px rgba(255, 0, 64, 0.4);
-}
-
-.modal-confirm:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(255, 0, 64, 0.6);
-}
-
 @media (max-width: 768px) {
   .container {
     padding: 10px;
@@ -912,25 +749,6 @@ onUnmounted(() => {
     font-size: 13px;
     margin-top: 12px;
   }
-  
-  .unfreeze-btn {
-    padding: 10px 30px;
-    font-size: 14px;
-    margin-top: 15px;
-  }
-  
-  .modal-content {
-    padding: 25px 30px;
-  }
-  
-  .modal-title {
-    font-size: 18px;
-  }
-  
-  .modal-input {
-    font-size: 16px;
-    padding: 12px 15px;
-  }
 }
 
 @media (max-width: 480px) {
@@ -997,36 +815,6 @@ onUnmounted(() => {
   .bottom-text {
     font-size: 12px;
     margin-top: 10px;
-  }
-  
-  .unfreeze-btn {
-    padding: 10px 25px;
-    font-size: 14px;
-    margin-top: 12px;
-  }
-  
-  .modal-content {
-    padding: 20px 25px;
-    width: 85%;
-  }
-  
-  .modal-title {
-    font-size: 16px;
-  }
-  
-  .modal-hint {
-    font-size: 12px;
-  }
-  
-  .modal-input {
-    font-size: 16px;
-    padding: 12px 15px;
-  }
-  
-  .modal-cancel,
-  .modal-confirm {
-    padding: 10px 20px;
-    font-size: 14px;
   }
 }
 </style>
