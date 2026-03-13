@@ -165,9 +165,19 @@ const formatNumber = (num, digits = 2) => {
 }
 
 // 倒计时到 2026 年 3 月 15 日 12:27
-onMounted(() => {
+onMounted(async () => {
   createSnowflakes()
-  initCountdown()
+  // 先获取远程状态
+  await fetchRemoteState()
+  
+  // 如果远程状态是运行中，才初始化倒计时
+  if (remoteState.value.status === 'running') {
+    initCountdown()
+  }
+  
+  // 每 10 秒同步一次远程状态
+  const syncInterval = setInterval(fetchRemoteState, 10000)
+  onUnmounted(() => clearInterval(syncInterval))
 })
 
 onUnmounted(() => {
