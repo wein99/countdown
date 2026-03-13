@@ -31,8 +31,68 @@ const closeModal = () => {
   birthdayInput.value = ''
 }
 
+// GitHub 配置
+const GITHUB_CONFIG = {
+  token: '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',
+  owner: 'wein99',
+  repo: 'countdown',
+  issueNumber: 1
+}
+
+// 远程状态
+const remoteState = ref({ status: 'running', unfrozenAt: null, frozenAt: null })
+const lastSyncTime = ref(0)
+
+// 从 GitHub 读取状态
+const fetchRemoteState = async () => {
+  if (Date.now() - lastSyncTime.value < 10000) return
+  
+  try {
+    const response = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/issues/${GITHUB_CONFIG.issueNumber}`, {
+      headers: {
+        'Authorization': `token ${GITHUB_CONFIG.token}`,
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    })
+    const issue = await response.json()
+    if (issue.body) {
+      remoteState.value = JSON.parse(issue.body)
+      lastSyncTime.value = Date.now()
+    }
+  } catch (error) {
+    console.error('Failed to fetch remote state:', error)
+  }
+}
+
+// 更新 GitHub 状态
+const updateRemoteState = async (newStatus) => {
+  try {
+    const body = {
+      status: newStatus,
+      unfrozenAt: newStatus === 'unfrozen' ? new Date().toISOString() : null,
+      frozenAt: newStatus === 'frozen' ? new Date().toISOString() : null
+    }
+    
+    await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/issues/${GITHUB_CONFIG.issueNumber}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `token ${GITHUB_CONFIG.token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ body: JSON.stringify(body) })
+    })
+    
+    remoteState.value = body
+    lastSyncTime.value = Date.now()
+  } catch (error) {
+    console.error('Failed to update remote state:', error)
+    alert('网络错误，请稍后重试～')
+  }
+}
+
 // 处理解冻
-const handleUnfreeze = () => {
+const handleUnfreeze = async () => {
   const input = birthdayInput.value.trim()
   
   if (input === '0918') {
@@ -42,10 +102,14 @@ const handleUnfreeze = () => {
     // 设置开始时间为 48 小时前，让进度变成 100%
     startTime.value = new Date(Date.now() - totalDuration)
     if (timerInterval.value) clearInterval(timerInterval.value)
+    // 更新远程状态
+    await updateRemoteState('unfrozen')
     closeModal()
   } else if (input === '1120') {
     // 恢复倒计时
     initCountdown()
+    // 更新远程状态
+    await updateRemoteState('frozen')
     closeModal()
   } else {
     alert('输入错误哦～请输入正确的生日密码！❤️')
